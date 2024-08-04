@@ -53,8 +53,8 @@ func Build() {
 	mg.SerialDeps(Test, BuildHai)
 }
 
-// RunWaiig runs unit tests, builds hai until /local, then runs it
-func RunWaiig() {
+// Run runs unit tests, builds hai into /local, then runs it
+func Run() {
 	mg.SerialDeps(Test, BuildHai)
 
 	target := sh.ExeName(hai)

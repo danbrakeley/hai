@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-const _TokenTypeName = "illegaleofidentintassignpluscommasemicolonlparenrparenlbracerbracefunctionlet"
+const _TokenTypeName = "illegaleofidentintassignplusminusbangasteriskslashltgteqnot_eqcommasemicolonlparenrparenlbracerbracefunctionlettruefalseifelsereturn"
 
-var _TokenTypeIndex = [...]uint8{0, 7, 10, 15, 18, 24, 28, 33, 42, 48, 54, 60, 66, 74, 77}
+var _TokenTypeIndex = [...]uint8{0, 7, 10, 15, 18, 24, 28, 33, 37, 45, 50, 52, 54, 56, 62, 67, 76, 82, 88, 94, 100, 108, 111, 115, 120, 122, 126, 132}
 
-const _TokenTypeLowerName = "illegaleofidentintassignpluscommasemicolonlparenrparenlbracerbracefunctionlet"
+const _TokenTypeLowerName = "illegaleofidentintassignplusminusbangasteriskslashltgteqnot_eqcommasemicolonlparenrparenlbracerbracefunctionlettruefalseifelsereturn"
 
 func (i TokenType) String() string {
 	if i >= TokenType(len(_TokenTypeIndex)-1) {
@@ -31,47 +31,86 @@ func _TokenTypeNoOp() {
 	_ = x[INT-(3)]
 	_ = x[ASSIGN-(4)]
 	_ = x[PLUS-(5)]
-	_ = x[COMMA-(6)]
-	_ = x[SEMICOLON-(7)]
-	_ = x[LPAREN-(8)]
-	_ = x[RPAREN-(9)]
-	_ = x[LBRACE-(10)]
-	_ = x[RBRACE-(11)]
-	_ = x[FUNCTION-(12)]
-	_ = x[LET-(13)]
+	_ = x[MINUS-(6)]
+	_ = x[BANG-(7)]
+	_ = x[ASTERISK-(8)]
+	_ = x[SLASH-(9)]
+	_ = x[LT-(10)]
+	_ = x[GT-(11)]
+	_ = x[EQ-(12)]
+	_ = x[NOT_EQ-(13)]
+	_ = x[COMMA-(14)]
+	_ = x[SEMICOLON-(15)]
+	_ = x[LPAREN-(16)]
+	_ = x[RPAREN-(17)]
+	_ = x[LBRACE-(18)]
+	_ = x[RBRACE-(19)]
+	_ = x[FUNCTION-(20)]
+	_ = x[LET-(21)]
+	_ = x[TRUE-(22)]
+	_ = x[FALSE-(23)]
+	_ = x[IF-(24)]
+	_ = x[ELSE-(25)]
+	_ = x[RETURN-(26)]
 }
 
-var _TokenTypeValues = []TokenType{ILLEGAL, EOF, IDENT, INT, ASSIGN, PLUS, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, FUNCTION, LET}
+var _TokenTypeValues = []TokenType{ILLEGAL, EOF, IDENT, INT, ASSIGN, PLUS, MINUS, BANG, ASTERISK, SLASH, LT, GT, EQ, NOT_EQ, COMMA, SEMICOLON, LPAREN, RPAREN, LBRACE, RBRACE, FUNCTION, LET, TRUE, FALSE, IF, ELSE, RETURN}
 
 var _TokenTypeNameToValueMap = map[string]TokenType{
-	_TokenTypeName[0:7]:        ILLEGAL,
-	_TokenTypeLowerName[0:7]:   ILLEGAL,
-	_TokenTypeName[7:10]:       EOF,
-	_TokenTypeLowerName[7:10]:  EOF,
-	_TokenTypeName[10:15]:      IDENT,
-	_TokenTypeLowerName[10:15]: IDENT,
-	_TokenTypeName[15:18]:      INT,
-	_TokenTypeLowerName[15:18]: INT,
-	_TokenTypeName[18:24]:      ASSIGN,
-	_TokenTypeLowerName[18:24]: ASSIGN,
-	_TokenTypeName[24:28]:      PLUS,
-	_TokenTypeLowerName[24:28]: PLUS,
-	_TokenTypeName[28:33]:      COMMA,
-	_TokenTypeLowerName[28:33]: COMMA,
-	_TokenTypeName[33:42]:      SEMICOLON,
-	_TokenTypeLowerName[33:42]: SEMICOLON,
-	_TokenTypeName[42:48]:      LPAREN,
-	_TokenTypeLowerName[42:48]: LPAREN,
-	_TokenTypeName[48:54]:      RPAREN,
-	_TokenTypeLowerName[48:54]: RPAREN,
-	_TokenTypeName[54:60]:      LBRACE,
-	_TokenTypeLowerName[54:60]: LBRACE,
-	_TokenTypeName[60:66]:      RBRACE,
-	_TokenTypeLowerName[60:66]: RBRACE,
-	_TokenTypeName[66:74]:      FUNCTION,
-	_TokenTypeLowerName[66:74]: FUNCTION,
-	_TokenTypeName[74:77]:      LET,
-	_TokenTypeLowerName[74:77]: LET,
+	_TokenTypeName[0:7]:          ILLEGAL,
+	_TokenTypeLowerName[0:7]:     ILLEGAL,
+	_TokenTypeName[7:10]:         EOF,
+	_TokenTypeLowerName[7:10]:    EOF,
+	_TokenTypeName[10:15]:        IDENT,
+	_TokenTypeLowerName[10:15]:   IDENT,
+	_TokenTypeName[15:18]:        INT,
+	_TokenTypeLowerName[15:18]:   INT,
+	_TokenTypeName[18:24]:        ASSIGN,
+	_TokenTypeLowerName[18:24]:   ASSIGN,
+	_TokenTypeName[24:28]:        PLUS,
+	_TokenTypeLowerName[24:28]:   PLUS,
+	_TokenTypeName[28:33]:        MINUS,
+	_TokenTypeLowerName[28:33]:   MINUS,
+	_TokenTypeName[33:37]:        BANG,
+	_TokenTypeLowerName[33:37]:   BANG,
+	_TokenTypeName[37:45]:        ASTERISK,
+	_TokenTypeLowerName[37:45]:   ASTERISK,
+	_TokenTypeName[45:50]:        SLASH,
+	_TokenTypeLowerName[45:50]:   SLASH,
+	_TokenTypeName[50:52]:        LT,
+	_TokenTypeLowerName[50:52]:   LT,
+	_TokenTypeName[52:54]:        GT,
+	_TokenTypeLowerName[52:54]:   GT,
+	_TokenTypeName[54:56]:        EQ,
+	_TokenTypeLowerName[54:56]:   EQ,
+	_TokenTypeName[56:62]:        NOT_EQ,
+	_TokenTypeLowerName[56:62]:   NOT_EQ,
+	_TokenTypeName[62:67]:        COMMA,
+	_TokenTypeLowerName[62:67]:   COMMA,
+	_TokenTypeName[67:76]:        SEMICOLON,
+	_TokenTypeLowerName[67:76]:   SEMICOLON,
+	_TokenTypeName[76:82]:        LPAREN,
+	_TokenTypeLowerName[76:82]:   LPAREN,
+	_TokenTypeName[82:88]:        RPAREN,
+	_TokenTypeLowerName[82:88]:   RPAREN,
+	_TokenTypeName[88:94]:        LBRACE,
+	_TokenTypeLowerName[88:94]:   LBRACE,
+	_TokenTypeName[94:100]:       RBRACE,
+	_TokenTypeLowerName[94:100]:  RBRACE,
+	_TokenTypeName[100:108]:      FUNCTION,
+	_TokenTypeLowerName[100:108]: FUNCTION,
+	_TokenTypeName[108:111]:      LET,
+	_TokenTypeLowerName[108:111]: LET,
+	_TokenTypeName[111:115]:      TRUE,
+	_TokenTypeLowerName[111:115]: TRUE,
+	_TokenTypeName[115:120]:      FALSE,
+	_TokenTypeLowerName[115:120]: FALSE,
+	_TokenTypeName[120:122]:      IF,
+	_TokenTypeLowerName[120:122]: IF,
+	_TokenTypeName[122:126]:      ELSE,
+	_TokenTypeLowerName[122:126]: ELSE,
+	_TokenTypeName[126:132]:      RETURN,
+	_TokenTypeLowerName[126:132]: RETURN,
 }
 
 var _TokenTypeNames = []string{
@@ -82,13 +121,26 @@ var _TokenTypeNames = []string{
 	_TokenTypeName[18:24],
 	_TokenTypeName[24:28],
 	_TokenTypeName[28:33],
-	_TokenTypeName[33:42],
-	_TokenTypeName[42:48],
-	_TokenTypeName[48:54],
-	_TokenTypeName[54:60],
-	_TokenTypeName[60:66],
-	_TokenTypeName[66:74],
-	_TokenTypeName[74:77],
+	_TokenTypeName[33:37],
+	_TokenTypeName[37:45],
+	_TokenTypeName[45:50],
+	_TokenTypeName[50:52],
+	_TokenTypeName[52:54],
+	_TokenTypeName[54:56],
+	_TokenTypeName[56:62],
+	_TokenTypeName[62:67],
+	_TokenTypeName[67:76],
+	_TokenTypeName[76:82],
+	_TokenTypeName[82:88],
+	_TokenTypeName[88:94],
+	_TokenTypeName[94:100],
+	_TokenTypeName[100:108],
+	_TokenTypeName[108:111],
+	_TokenTypeName[111:115],
+	_TokenTypeName[115:120],
+	_TokenTypeName[120:122],
+	_TokenTypeName[122:126],
+	_TokenTypeName[126:132],
 }
 
 // TokenTypeString retrieves an enum value from the enum constants string name.

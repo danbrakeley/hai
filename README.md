@@ -1,4 +1,4 @@
-# ◝(^⌣^)◜ <!-- omit from toc -->
+# ヽ(•‿•)ノ <!-- omit from toc -->
 
 - [Overview](#overview)
 - [Dev Setup](#dev-setup)

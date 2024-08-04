@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/danbrakeley/interpreter/internal/token"
+import "github.com/danbrakeley/hai/internal/token"
 
 type Lexer struct {
 	input        string

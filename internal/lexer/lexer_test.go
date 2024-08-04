@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"github.com/danbrakeley/interpreter/internal/token"
+	"github.com/danbrakeley/hai/internal/token"
 )
 
 const monkeyFirst = `let five = 5;

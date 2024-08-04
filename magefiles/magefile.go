@@ -10,7 +10,7 @@ import (
 )
 
 var sh = &bsh.Bsh{}
-var waiig = "waiig"
+var hai = "hai"
 
 // Test runs tests for all packages
 func Test() {
@@ -24,9 +24,9 @@ func Gen() {
 	sh.Cmd("go generate ./...").Run()
 }
 
-// BuildWaiig builds cmd/waiig (output goes to "local" folder)
-func BuildWaiig() {
-	target := sh.ExeName(waiig)
+// BuildHai builds cmd/hai (output goes to "local" folder)
+func BuildHai() {
+	target := sh.ExeName(hai)
 
 	sh.Echof("Building %s...", target)
 	sh.MkdirAll("local/")
@@ -41,23 +41,23 @@ func BuildWaiig() {
 
 	sh.Cmdf(
 		`go build -ldflags '`+
-			`-X "github.com/danbrakeley/interpreter/internal/buildvar.Version=%s" `+
-			`-X "github.com/danbrakeley/interpreter/internal/buildvar.BuildTime=%s" `+
-			`-X "github.com/danbrakeley/interpreter/internal/buildvar.ReleaseURL=https://github.com/danbrakeley/interpreter"`+
-			`' -o local/%s ./cmd/%s`, commit, time.Now().Format(time.RFC3339), target, waiig,
+			`-X "github.com/danbrakeley/hai/internal/buildvar.Version=%s" `+
+			`-X "github.com/danbrakeley/hai/internal/buildvar.BuildTime=%s" `+
+			`-X "github.com/danbrakeley/hai/internal/buildvar.ReleaseURL=https://github.com/danbrakeley/hai"`+
+			`' -o local/%s ./cmd/%s`, commit, time.Now().Format(time.RFC3339), target, hai,
 	).Run()
 }
 
 // Build tests and builds all apps
 func Build() {
-	mg.SerialDeps(Test, BuildWaiig)
+	mg.SerialDeps(Test, BuildHai)
 }
 
-// RunWaiig runs unit tests, builds waiig until /local, then runs it
+// RunWaiig runs unit tests, builds hai until /local, then runs it
 func RunWaiig() {
-	mg.SerialDeps(Test, BuildWaiig)
+	mg.SerialDeps(Test, BuildHai)
 
-	target := sh.ExeName(waiig)
+	target := sh.ExeName(hai)
 
 	sh.Echo("Running...")
 	sh.Cmdf("./%s", target).Dir("local").Run()

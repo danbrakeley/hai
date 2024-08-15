@@ -8,7 +8,6 @@ import (
 )
 
 func TestNextToken_IndividualTokens(t *testing.T) {
-
 	var cases = []struct {
 		token           string
 		expectedType    token.TokenType
@@ -16,7 +15,12 @@ func TestNextToken_IndividualTokens(t *testing.T) {
 	}{
 		{"#", token.ILLEGAL, "#"},
 		{"", token.EOF, ""},
+		{"a", token.IDENT, "a"},
+		{"aBcD", token.IDENT, "aBcD"},
 		{"ab_YZ", token.IDENT, "ab_YZ"},
+		{"termin8", token.IDENT, "termin8"},
+		{"_a2D", token.IDENT, "_a2D"},
+		{"2a", token.ILLEGAL, "2a"},
 		{"10", token.INT, "10"},
 		{"=", token.ASSIGN, "="},
 		{"+", token.PLUS, "+"},
@@ -43,29 +47,35 @@ func TestNextToken_IndividualTokens(t *testing.T) {
 		{"return", token.RETURN, "return"},
 	}
 
-	expectedTokenCount := len(token.TokenTypeValues())
-	if len(cases) != expectedTokenCount {
-		t.Fatalf("invalid number of tokens: expected %d, got %d", expectedTokenCount, len(cases))
+	allTokens := make(map[token.TokenType]bool)
+	for _, v := range token.TokenTypeValues() {
+		allTokens[v] = true
+	}
+
+	for _, tc := range cases {
+		delete(allTokens, tc.expectedType)
+	}
+	if len(allTokens) > 0 {
+		t.Fatalf("not all token types are tested: %v", allTokens)
 	}
 
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("%s token", tc.expectedType.String()), func(t *testing.T) {
-			t.Parallel()
 			if !tc.expectedType.IsATokenType() {
-				t.Fatalf("invalid token type: %d", tc.expectedType)
+				t.Errorf("invalid token type: %d", tc.expectedType)
 			}
 
 			l := New(tc.token)
 			tok := l.NextToken()
 
-			if tok.Type != tc.expectedType {
-				t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-					i, tc.expectedType.String(), tok.Type.String())
+			if tok.Type() != tc.expectedType {
+				t.Errorf("cases[%d]: expected token type %s, got %s",
+					i, tc.expectedType.String(), tok.Type().String())
 			}
 
-			if tok.Literal != tc.expectedLiteral {
-				t.Fatalf("tests[%d] - literal wrong. expected=%q, got %q",
-					i, tc.expectedLiteral, tok.Literal)
+			if tok.Literal() != tc.expectedLiteral {
+				t.Errorf("cases[%d]: expected literal '%s', got '%s'",
+					i, tc.expectedLiteral, tok.Literal())
 			}
 		})
 	}
@@ -177,14 +187,14 @@ if (5 < 10) {
 	for i, tt := range tests {
 		tok := l.NextToken()
 
-		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-				i, tt.expectedType, tok.Type)
+		if tok.Type() != tt.expectedType {
+			t.Fatalf("cases[%d]: expected token type %s, got %s",
+				i, tt.expectedType.String(), tok.Type().String())
 		}
 
-		if tok.Literal != tt.expectedLiteral {
-			t.Fatalf("tests[%d] - literal wrong. expected=%q, got %q",
-				i, tt.expectedLiteral, tok.Literal)
+		if tok.Literal() != tt.expectedLiteral {
+			t.Fatalf("cases[%d]: expected literal '%s', got '%s'",
+				i, tt.expectedLiteral, tok.Literal())
 		}
 	}
 }

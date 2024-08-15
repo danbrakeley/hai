@@ -8,7 +8,7 @@ type Lexer struct {
 	input        string
 	position     int  // current reading position in input (points to current char)
 	readPosition int  // current reading position in input (after current char)
-	ch           byte //current char under examination
+	ch           byte // current char under examination
 }
 
 func New(input string) *Lexer {
@@ -43,81 +43,81 @@ func (l *Lexer) NextToken() token.Token {
 	case '=':
 		if l.peekChar() == '=' {
 			l.readChar()
-			tok = token.Token{Type: token.EQ, Literal: "=="}
+			tok = token.New(token.EQ, "==")
 		} else {
-			tok = newToken(token.ASSIGN, l.ch)
+			tok = token.New(token.ASSIGN, l.ch)
 		}
 	case '+':
-		tok = newToken(token.PLUS, l.ch)
+		tok = token.New(token.PLUS, l.ch)
 	case '-':
-		tok = newToken(token.MINUS, l.ch)
+		tok = token.New(token.MINUS, l.ch)
 	case '!':
 		if l.peekChar() == '=' {
 			l.readChar()
-			tok = token.Token{Type: token.NOT_EQ, Literal: "!="}
+			tok = token.New(token.NOT_EQ, "!=")
 		} else {
-			tok = newToken(token.BANG, l.ch)
+			tok = token.New(token.BANG, l.ch)
 		}
 	case '*':
-		tok = newToken(token.ASTERISK, l.ch)
+		tok = token.New(token.ASTERISK, l.ch)
 	case '/':
-		tok = newToken(token.SLASH, l.ch)
+		tok = token.New(token.SLASH, l.ch)
 	case '<':
-		tok = newToken(token.LT, l.ch)
+		tok = token.New(token.LT, l.ch)
 	case '>':
-		tok = newToken(token.GT, l.ch)
+		tok = token.New(token.GT, l.ch)
 	case ';':
-		tok = newToken(token.SEMICOLON, l.ch)
+		tok = token.New(token.SEMICOLON, l.ch)
 	case '(':
-		tok = newToken(token.LPAREN, l.ch)
+		tok = token.New(token.LPAREN, l.ch)
 	case ')':
-		tok = newToken(token.RPAREN, l.ch)
+		tok = token.New(token.RPAREN, l.ch)
 	case ',':
-		tok = newToken(token.COMMA, l.ch)
+		tok = token.New(token.COMMA, l.ch)
 	case '{':
-		tok = newToken(token.LBRACE, l.ch)
+		tok = token.New(token.LBRACE, l.ch)
 	case '}':
-		tok = newToken(token.RBRACE, l.ch)
+		tok = token.New(token.RBRACE, l.ch)
 	case 0:
-		tok.Literal = ""
-		tok.Type = token.EOF
+		tok = token.New(token.EOF, "")
 	default:
-		if isLetter(l.ch) {
-			tok.Literal = l.readIdentifier()
-			tok.Type = token.LookupIdent(tok.Literal)
+		switch {
+		case isValidStartToIdent(l.ch):
+			tok = token.NewIdent(l.readIdentifier())
+			// early out so we don't skip the next char
 			return tok
-		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
+		case isDigit(l.ch):
+			lit := l.readNumber()
+			if isValidStartToIdent(l.ch) {
+				lit = lit + l.readIdentifier()
+				tok = token.New(token.ILLEGAL, lit)
+			} else {
+				tok = token.New(token.INT, lit)
+			}
+			// early out so we don't skip the next char
 			return tok
-		} else {
-			tok = newToken(token.ILLEGAL, l.ch)
+		default:
+			tok = token.New(token.ILLEGAL, l.ch)
 		}
 	}
 	l.readChar()
 	return tok
 }
 
-func newToken(tokenType token.TokenType, ch byte) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch)}
+func (l *Lexer) skipWhitespace() {
+	for isWhitespace(l.ch) {
+		l.readChar()
+	}
 }
 
+// readIdentifier assumes current char is a valid start to an identifier
 func (l *Lexer) readIdentifier() string {
 	position := l.position
-	for isLetter(l.ch) {
+	l.readChar()
+	for isValidBodyOfIdent(l.ch) {
 		l.readChar()
 	}
 	return l.input[position:l.position]
-}
-
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
-
-func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readChar()
-	}
 }
 
 func (l *Lexer) readNumber() string {
@@ -128,6 +128,22 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'
+}
+
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z'
+}
+
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func isValidStartToIdent(ch byte) bool {
+	return isLetter(ch) || ch == '_'
+}
+
+func isValidBodyOfIdent(ch byte) bool {
+	return isLetter(ch) || ch == '_' || isDigit(ch)
 }

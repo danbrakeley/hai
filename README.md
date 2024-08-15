@@ -1,6 +1,7 @@
 # ヽ(•‿•)ノ <!-- omit from toc -->
 
 - [Overview](#overview)
+  - [Code from book](#code-from-book)
 - [Dev Setup](#dev-setup)
 
 ## Overview
@@ -8,6 +9,10 @@
 This repo is my implementation of an interpreter for a made up language I call "Hai".
 
 It is being created as I work my way through [Thorsten Ball's "Writing an Interpreter in Go"](https://interpreterbook.com/).
+
+### Code from book
+
+Maybe this? [github.com/zanshin/interpreter](https://github.com/zanshin/interpreter)
 
 ## Dev Setup
 
@@ -36,7 +41,7 @@ Targets:
   buildHai    builds cmd/hai (output goes to "local" folder)
   ci          runs all CI tasks
   gen         runs go generate for all packages
-  runWaiig    runs unit tests, builds hai until /local, then runs it
+  run         runs unit tests, builds hai into /local, then runs it
   setup       installs cli apps needed for development (not including 'go' or 'mage')
   test        runs tests for all packages
 ```

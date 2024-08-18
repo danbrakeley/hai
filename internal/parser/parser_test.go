@@ -51,7 +51,7 @@ let foobar = ;`,
 			[]string{
 				"expected next token to be ident, got assign instead",
 				"expected next token to be assign, got int instead",
-				"expected next token to be int, got semicolon instead",
+				// "expected next token to be int, got semicolon instead",
 			},
 		},
 	}
@@ -64,7 +64,7 @@ let foobar = ;`,
 			program := p.ParseProgram()
 
 			errors := p.Errors()
-			if !assertErrors(t, errors, tc.errors) {
+			if !checkErrors(t, errors, tc.errors) {
 				return
 			}
 
@@ -77,17 +77,104 @@ let foobar = ;`,
 				)
 			}
 
-			for i, tt := range tc.expectedIdents {
+			for i, ident := range tc.expectedIdents {
 				stmt := program.Statements[i]
-				if !assertLetStatment(t, stmt, tt) {
-					return
+				if stmt.TokenLiteral() != "let" {
+					t.Fatalf("s.TokenLiteral not 'let', got %q", stmt.TokenLiteral())
+				}
+
+				letStmt, ok := stmt.(*ast.LetStatement)
+				if !ok {
+					t.Fatalf("expected *ast.Statement, got %T", stmt)
+				}
+
+				if letStmt.Name.Value != ident {
+					t.Fatalf("letStmt.Name.Value not '%s', got %s", ident, letStmt.Name.Value)
+				}
+
+				if letStmt.Name.TokenLiteral() != ident {
+					t.Fatalf("letStmt.Name.TokenLiteral() not '%s', got %s", ident, letStmt.Name.TokenLiteral())
 				}
 			}
 		})
 	}
 }
 
-func assertErrors(t *testing.T, actual, expected []string) bool {
+func TestReturnStatements(t *testing.T) {
+	cases := []struct {
+		name          string
+		input         string
+		expectedCount int
+		errors        []string
+	}{
+		{
+			"single valid return",
+			"return 5;",
+			1,
+			[]string{},
+		},
+		{
+			"missing semicolon",
+			"return 5",
+			0,
+			[]string{"expected next token to be semicolon, got eof instead"},
+		},
+		// {
+		// 	"missing expression",
+		// 	"return ;",
+		// 	0,
+		// 	[]string{"expected next token to be int, got semicolon instead",},
+		// },
+		{
+			"three valid returns",
+			`
+return 5;
+return 10;
+return 993322;`,
+			3,
+			[]string{},
+		},
+		{
+			"three invalid returns",
+			`
+return ;
+return 10
+return return;`,
+			// 0,
+			2,
+			[]string{
+				// "expected next token to be int, got semicolon instead",
+				// "expected next token to be semicolon, got return instead",
+				// "expected next token to be int, got return instead",
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			l := lexer.New(tc.input)
+			p := New(l)
+
+			program := p.ParseProgram()
+
+			errors := p.Errors()
+			if !checkErrors(t, errors, tc.errors) {
+				return
+			}
+
+			if program == nil {
+				t.Fatalf("ParseProgram() returned nil")
+			}
+			if len(program.Statements) != tc.expectedCount {
+				t.Fatalf("expected len(program.Statements) to be %d, got %d",
+					tc.expectedCount, len(program.Statements),
+				)
+			}
+		})
+	}
+}
+
+func checkErrors(t *testing.T, actual, expected []string) bool {
 	t.Helper()
 	if len(actual) != len(expected) {
 		var msg string
@@ -116,29 +203,4 @@ func assertErrors(t *testing.T, actual, expected []string) bool {
 		}
 	}
 	return len(actual) == 0
-}
-
-func assertLetStatment(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let', got %q", s.TokenLiteral())
-		return false
-	}
-
-	letStmt, ok := s.(*ast.LetStatement)
-	if !ok {
-		t.Errorf("expected *ast.Statement, got %T", s)
-		return false
-	}
-
-	if letStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s', got %s", name, letStmt.Name.Value)
-		return false
-	}
-
-	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("letStmt.Name.TokenLiteral() not '%s', got %s", name, letStmt.Name.TokenLiteral())
-		return false
-	}
-
-	return true
 }

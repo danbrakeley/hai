@@ -58,11 +58,14 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type() {
 	case token.LET:
 		return p.parseLetStatement()
+	case token.RETURN:
+		return p.parseReturnStatement()
 	default:
 		return nil
 	}
 }
 
+// parseLetStatement assumes curToken is LET
 func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: p.curToken}
 
@@ -78,16 +81,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	}
 	p.nextToken()
 
-	// TODO: parse expressions, not just ints
-	if !p.expectPeek(token.INT) {
-		return nil
-	}
-	p.nextToken()
-
+	// TODO: parse expressions
+	p.skipTo(token.SEMICOLON)
 	if !p.expectPeek(token.SEMICOLON) {
 		return nil
 	}
-	p.nextToken()
 
 	return stmt
 }
@@ -98,4 +96,23 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 	p.peekError(t)
 	return false
+}
+
+func (p *Parser) skipTo(t token.TokenType) {
+	for !p.peekToken.Is(t) && !p.peekToken.Is(token.EOF) {
+		p.nextToken()
+	}
+}
+
+// parseReturnStatement assumes curToken is RETURN
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{Token: p.curToken}
+
+	// TODO: parse expressions
+	p.skipTo(token.SEMICOLON)
+	if !p.expectPeek(token.SEMICOLON) {
+		return nil
+	}
+
+	return stmt
 }
